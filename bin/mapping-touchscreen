@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# Externals
+# We need some external tools in order to get edid info as normal user (no root grants)
+# Python script "get-edid.py" provided by mvollrath ( github repository  https://gist.github.com/mvollrath/9aa0198264e6b4890914 )
+# Binary "parse-edid" provided by read-edid package
+
+# Version=0.0.1
+
+EXEC_PYTHON="python3"
+GET_EDID="get-edid.py" # From  Matt Vollrath  in  Github  mvollrath/get-edid.py 
+PARSER="parse-edid"
+
+
+
+# Dictionaries with the relationship beetwen monitor idenfiers (keys) and the touchscreen input identifiers (values)
+declare -A XSCREEN_XINPUTS
+
+XSCREEN_XINPUTS=(
+    ['GT-191']='HID 256c:006e Pen Pen (0)'
+    ['VT168HR']='G2Touch Multi-Touch by G2TSP'
+    ['CX123TP-C']='TSTP MTouch'
+)
+
+# Relationship beetwen monitor idenfiers (keys) and xinput ids (values)
+declare -A XINPUT_IDS=( )
+
+# Relationship beetwen input identifiers (keys) and xrandr active monitors matching with $XSCREEN_XINPUTS values (values)
+declare -A VIDEO_DISPLAYS=( )
+
+
+function salir()
+{
+    echo "There is not \"$1\""
+    if [[ "$1" = "$EXEC_PYTHON" ]] ; then
+        echo -e "Check if there is a \"python\" link to $(find /usr/bin -type f -executable -iname 'python*')"
+    elif [[ "$1" = "$GET_EDID" ]] ; then
+        echo "Please get python script from \"https://gist.github.com/mvollrath/9aa0198264e6b4890914\""
+    elif [[ "$1" = "$PARSER" ]] ; then
+        echo "Please install read-edid package"
+    fi
+    exit 6
+}
+
+
+function get_input_ids()
+{
+    local XSCREEN
+    for XSCREEN in "${!XSCREEN_XINPUTS[@]}" ; do
+        INPUT_V="${XSCREEN_XINPUTS[$XSCREEN]}"
+        ID=$( xinput list --id-only "${INPUT_V}" 2> /dev/null ]] )
+        if [[ -n $ID ]] ; then
+            XINPUT_IDS["${XSCREEN}"]="${ID}"
+            echo -e "$XSCREEN - ${XINPUT_IDS["${XSCREEN}"]}"
+        fi
+    done
+    
+}
+
+function get_screens()
+{
+    local MONITOR
+    local IDENTIFIER
+    
+    LIST_MONITORS=$( xrandr --listactivemonitors| grep -v "Monitors:" | awk '{print $NF}')
+    
+    for MONITOR in ${LIST_MONITORS[@]} ; do
+        IDENTIFIER=$( "${GET_EDID}" "${MONITOR}" | "$PARSER" 2> /dev/null | grep "Identifier" | awk '{print $NF }' | tr -d "\"" )
+        if [[ -n ${XINPUT_IDS["${IDENTIFIER}"]} ]] ; then
+            ID=${XINPUT_IDS["${IDENTIFIER}"]}
+            set_output_maps "${ID}" "${MONITOR}"
+        fi
+    done
+}
+
+function set_output_maps()
+{
+    local ID=$1
+    local MONITOR=$2
+    echo "Linking input ${ID} to monitor: ${MONITOR}"
+    /usr/bin/xinput map-to-output "${ID}" "${MONITOR}"
+}
+
+function get_x_user()
+{
+
+    local ID=$1
+    local MONITOR=$2
+    IF_USER=$(id -u -n )
+    echo $IF_USER
+    if [[ "$IF_USER" = "root" ]] ; then
+        XAUTH=$( ls /var/run/lightdm/root/ )
+        for D in ${XAUTH} ; do
+            export XAUTHORITY="/var/run/lightdm/root/$D"
+            export DISPLAY=${D}
+            xhost +si:localuser:root
+            /usr/bin/xinput map-to-output "${ID}" "${MONITOR}"
+        done
+    else
+        export XAUTHORITY="/home/$IF_USER/.Xauthority"
+        [[ -z $DISPLAY ]] && export D=":0" 
+       
+    fi
+    xhost +si:localuser:root
+    echo $DISPLAY $XAUTHORITY
+    
+}
+
+
+function help_mssg()
+{
+    cat << EOF
+    Usage: input-touchscreen [ input output ]
+    
+EOF
+}
+
+[[ -z $( which $EXEC_PYTHON ) ]] && salir $EXEC_PYTHON
+[[ -z $( which $GET_EDID ) ]] && salir $GET_EDID
+[[ -z $( which $PARSER ) ]] && salir $PARSER
+
+get_x_user || exit 2
+if [[ -z ${@} ]] ; then
+    get_input_ids 
+    get_screens || exit 4
+    #set_output_maps || exit 5
+elif [[ ! -z $1 ]] && [[ ! -z $2 ]] ; then
+    echo $1
+    echo $2
+else
+    echo "No output or no input"
+    help_mssg
+    exit 7
+fi
+xhost -si:localuser:root
+
+

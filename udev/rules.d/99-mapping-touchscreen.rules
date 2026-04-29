@@ -1,0 +1,22 @@
+KERNEL!="event*", SUBSYSTEM!="input",  GOTO="end"
+
+## Huion Stylus 
+ACTION=="add", ATTRS{idVendor}=="256c", ATTRS{idProduct}=="006e", ENV{INPUT_TOUCHSCREEN}="input_Huion_Stylus", GOTO="start"
+
+## Asus Touchscreen
+ACTION=="add",  ATTRS{idVendor}=="2a94", ATTRS{idProduct}=="5609", ENV{INPUT_TOUCHSCREEN}="input_Asus_Touchscreen", GOTO="start"
+
+## TSTP MTouch
+ACTION=="add",  ATTRS{idVendor}=="0416", ATTRS{idProduct}=="c168", ENV{INPUT_TOUCHSCREEN}="input_TSTP_MTouch", GOTO="start"
+
+ACTION=="change", SUBSYSTEM=="drm", GOTO="start"
+
+GOTO="end"
+
+LABEL="start"
+
+SYMLINK+="$env{INPUT_TOUCHSCREEN}"
+TAG+="systemd"
+ENV{SYSTEMD_WANTS}+="/usr/bin/systemctl start mapping-touchscreen.service"
+
+LABEL="end"

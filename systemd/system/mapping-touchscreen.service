@@ -1,0 +1,15 @@
+[Unit]
+Description=Input touchscreen
+Wants=graphical.target
+After=graphical.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/bin/mapping-touchscreen
+TimeoutStartSec=5
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=lightdm.service
