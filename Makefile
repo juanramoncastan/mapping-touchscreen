@@ -15,13 +15,10 @@
 # ----------------------------------------------------------------------
 
 # ###########      mapping-touchscreen Makefile     ###########################
+# Version: 0.0.2
+# BUILD = "../package-name_version_architecture" given from "debianizador" app
 
-# Version: 0.0.1
-
-# BUILD = "../package-name_version_architecture" given from "debianizador" script
-# or make BUILD="" install to install directly into the system
-BUILD = 
-
+BUILD = ""
 PREFIX = /usr
 CONFIG_PATH = /etc
 BIN_PATH = /bin
