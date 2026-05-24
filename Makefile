@@ -18,7 +18,7 @@
 # Version: 0.0.2
 # BUILD = "../package-name_version_architecture" given from "debianizador" app
 
-BUILD = ""
+BUILD = 
 PREFIX = /usr
 CONFIG_PATH = /etc
 BIN_PATH = /bin
