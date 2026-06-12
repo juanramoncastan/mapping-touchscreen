@@ -5,11 +5,11 @@
 # Python script "get-edid.py" provided by mvollrath ( github repository  https://gist.github.com/mvollrath/9aa0198264e6b4890914 )
 # Binary "parse-edid" provided by read-edid package
 
-# Version=0.0.1
+# Version: 0.1.0
 
-EXEC_PYTHON="python3"
-GET_EDID="get-edid.py" # From  Matt Vollrath  in  Github  mvollrath/get-edid.py 
-PARSER="parse-edid"
+#EXEC_PYTHON="python3"
+#GET_EDID="get-edid.py" # From  Matt Vollrath  in  Github  mvollrath/get-edid.py 
+#PARSER="parse-edid"
 
 
 
@@ -65,7 +65,9 @@ function get_screens()
     LIST_MONITORS=$( xrandr --listactivemonitors| grep -v "Monitors:" | awk '{print $NF}')
     
     for MONITOR in ${LIST_MONITORS[@]} ; do
-        IDENTIFIER=$( "${GET_EDID}" "${MONITOR}" | "$PARSER" 2> /dev/null | grep "Identifier" | awk '{print $NF }' | tr -d "\"" )
+        #IDENTIFIER=$( "${GET_EDID}" "${MONITOR}" | "$PARSER" 2> /dev/null | grep "Identifier" | awk '{print $NF }' | tr -d "\"" )
+        IDENTIFIER=$(inxi -Gxxx -y 1000 | grep Monitor- | grep "${MONITOR}" | awk '{ gsub(/ [a-zA-Z_-]+:/, "\n&") ; print }' | grep model: | awk -F" model: " '{print $2}')
+        #echo -e  $MONITOR "${XINPUT_IDS["${IDENTIFIER}"]}"
         if [[ -n ${XINPUT_IDS["${IDENTIFIER}"]} ]] ; then
             ID=${XINPUT_IDS["${IDENTIFIER}"]}
             set_output_maps "${ID}" "${MONITOR}"
@@ -115,9 +117,9 @@ function help_mssg()
 EOF
 }
 
-[[ -z $( which $EXEC_PYTHON ) ]] && salir $EXEC_PYTHON
-[[ -z $( which $GET_EDID ) ]] && salir $GET_EDID
-[[ -z $( which $PARSER ) ]] && salir $PARSER
+#[[ -z $( which $EXEC_PYTHON ) ]] && salir $EXEC_PYTHON
+#[[ -z $( which $GET_EDID ) ]] && salir $GET_EDID
+#[[ -z $( which $PARSER ) ]] && salir $PARSER
 
 get_x_user || exit 2
 if [[ -z ${@} ]] ; then

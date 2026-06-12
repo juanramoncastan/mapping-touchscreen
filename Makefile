@@ -15,7 +15,7 @@
 # ----------------------------------------------------------------------
 
 # ###########      mapping-touchscreen Makefile     ###########################
-# Version: 0.0.2
+# Version: 0.1.0
 # BUILD = "../package-name_version_architecture" given from "debianizador" app
 
 BUILD = 
@@ -52,7 +52,6 @@ set-udev:
 install: test set-systemd  set-udev
 	@ mkdir -p  $(BUILD)$(PREFIX)$(BIN_PATH)
 	@ cp .$(BIN_PATH)/mapping-touchscreen $(BUILD)$(PREFIX)$(BIN_PATH)
-	@ cp .$(BIN_PATH)/get-edid.py $(BUILD)$(PREFIX)$(BIN_PATH)
 	@ echo "Executables installed  in \"$(BUILD)$(PREFIX)$(BIN_PATH)/\""
 	
 uninstall:
