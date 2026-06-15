@@ -31,6 +31,8 @@ UDEV_RULE = 99-mapping-touchscreen.rules
 
 SHARE_PATH = /share
 
+AUTOSTART_PATH= /xdg/autostart
+
 test:
     ifeq ($(BUILD),)
 		@ echo "Make will install in the root system"
@@ -46,19 +48,25 @@ set-systemd:
 	
 set-udev:
 	@ mkdir -p  $(BUILD)$(CONFIG_PATH)$(UDEV_PATH)/
-	@ cp .$(UDEV_PATH)/$(UDEV_RULE) $(BUILD)$(CONFIG_PATH)$(UDEV_PATH)
+	@ cp .$(UDEV_PATH)/$(UDEV_RULE) $(BUILD)$(CONFIG_PATH)$(UDEV_PATH)/
 	@ echo "Udev rules \"$(UDEV_RULE)\" instaled in \"$(BUILD)$(CONFIG_PATH)$(UDEV_PATH)/\""
 	
-install: test set-systemd  set-udev
+set-autostart:
+	@ mkdir -p  $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/
+	@ cp .$(AUTOSTART_PATH)/"Mapping Touchscreen.desktop" $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/
+	@ echo "Autostart instaled in \"$(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/\""
+	
+install: test set-systemd  set-udev set-autostart
 	@ mkdir -p  $(BUILD)$(PREFIX)$(BIN_PATH)
-	@ cp .$(BIN_PATH)/mapping-touchscreen $(BUILD)$(PREFIX)$(BIN_PATH)
+	@ cp .$(BIN_PATH)/mapping-touchscreen $(BUILD)$(PREFIX)$(BIN_PATH)/
+	@ cp .$(BIN_PATH)/get-edid.py $(BUILD)$(PREFIX)$(BIN_PATH)/
 	@ echo "Executables installed  in \"$(BUILD)$(PREFIX)$(BIN_PATH)/\""
 	
 uninstall:
 	rm $(BUILD)$(PREFIX)$(BIN_PATH)/mapping-touchscreen
 	rm $(BUILD)$(PREFIX)$(BIN_PATH)/get-edid.py
 	rm $(BUILD)$(CONFIG_PATH)$(SYSTEMD_PATH)/$(SYSTEMD_SERVICE)
-	rm $(BUILD)$(CONFIG_PATH)$(LIGHTDM_PATH)/$(LIGHTDM_CONF_FILE)
-	rm $(BUILD)$(CONFIG_PATH)$(UDEV_PATH)$(UDEV_RULE)
+	rm $(BUILD)$(CONFIG_PATH)$(UDEV_PATH)/$(UDEV_RULE)
+	rm $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/"Mapping Touchscreen.desktop"
 
 
