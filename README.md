@@ -1,6 +1,6 @@
 # input-touchscreen
 ----------------------------------------------------------------------
-Version: 0.1.0
+Version: 0.1.1
 ----------------------------------------------------------------------
 It tries to link an input touchscreen to an xrandr output (monitor)
 Avoiding static configurations in xorg files this script adapts de mapping

@@ -1,8 +1,8 @@
 Package: mapping-touchscreen
-Version: 0.1.0
+Version: 0.1.1
 Section: admin
 Priority: extra
 Architecture: all
-Depends: inxi
+Depends: read-edid
 Maintainer: Juan Ramon Castan
 Description: Automatically maps xinput touchscreen to a monitor.

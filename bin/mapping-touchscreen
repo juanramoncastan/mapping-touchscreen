@@ -5,7 +5,7 @@
 # Python script "get-edid.py" provided by mvollrath ( github repository  https://gist.github.com/mvollrath/9aa0198264e6b4890914 )
 # Binary "parse-edid" provided by read-edid package
 
-# Version: 0.0.1
+# Version: 0.1.1
 
 EXEC_PYTHON="python3"
 GET_EDID="get-edid.py" # From  Matt Vollrath  in  Github  mvollrath/get-edid.py 

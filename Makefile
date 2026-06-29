@@ -15,7 +15,7 @@
 # ----------------------------------------------------------------------
 
 # ###########      mapping-touchscreen Makefile     ###########################
-# Version: 0.1.0
+# Version: 0.1.1
 # BUILD = "../package-name_version_architecture" given from "debianizador" app
 
 BUILD = 
@@ -53,20 +53,22 @@ set-udev:
 	
 set-autostart:
 	@ mkdir -p  $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/
-	@ cp .$(AUTOSTART_PATH)/"Mapping Touchscreen.desktop" $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/
+	@ cp ".$(AUTOSTART_PATH)/Mapping Touchscreen.desktop" $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/
 	@ echo "Autostart instaled in \"$(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/\""
 	
 install: test set-systemd  set-udev set-autostart
+	@ echo 
 	@ mkdir -p  $(BUILD)$(PREFIX)$(BIN_PATH)
 	@ cp .$(BIN_PATH)/mapping-touchscreen $(BUILD)$(PREFIX)$(BIN_PATH)/
 	@ cp .$(BIN_PATH)/get-edid.py $(BUILD)$(PREFIX)$(BIN_PATH)/
-	@ echo "Executables installed  in \"$(BUILD)$(PREFIX)$(BIN_PATH)/\""
+	@ echo "Executables installed in \"$(BUILD)$(PREFIX)$(BIN_PATH)/\""
+	@ echo 
 	
 uninstall:
 	rm $(BUILD)$(PREFIX)$(BIN_PATH)/mapping-touchscreen
 	rm $(BUILD)$(PREFIX)$(BIN_PATH)/get-edid.py
 	rm $(BUILD)$(CONFIG_PATH)$(SYSTEMD_PATH)/$(SYSTEMD_SERVICE)
 	rm $(BUILD)$(CONFIG_PATH)$(UDEV_PATH)/$(UDEV_RULE)
-	rm $(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/"Mapping Touchscreen.desktop"
+	rm "$(BUILD)$(CONFIG_PATH)$(AUTOSTART_PATH)/Mapping Touchscreen.desktop"
 
 
